@@ -1,0 +1,8 @@
+C:\Users\cabuk\source\repos\SACO.SolidWorks.ComptProps\SACO.SolidWorks.ComptProps\bin\Debug\SACO.SolidWorks.ComptProps.dll
+C:\Users\cabuk\source\repos\SACO.SolidWorks.ComptProps\SACO.SolidWorks.ComptProps\bin\Debug\SACO.SolidWorks.ComptProps.pdb
+C:\Users\cabuk\source\repos\SACO.SolidWorks.ComptProps\SACO.SolidWorks.ComptProps\obj\Debug\SACO.SolidWorks.ComptProps.csproj.AssemblyReference.cache
+C:\Users\cabuk\source\repos\SACO.SolidWorks.ComptProps\SACO.SolidWorks.ComptProps\obj\Debug\SACO.SolidWorks.ComptProps.TaskpaneHost.resources
+C:\Users\cabuk\source\repos\SACO.SolidWorks.ComptProps\SACO.SolidWorks.ComptProps\obj\Debug\SACO.SolidWorks.ComptProps.csproj.GenerateResource.cache
+C:\Users\cabuk\source\repos\SACO.SolidWorks.ComptProps\SACO.SolidWorks.ComptProps\obj\Debug\SACO.SolidWorks.ComptProps.csproj.CoreCompileInputs.cache
+C:\Users\cabuk\source\repos\SACO.SolidWorks.ComptProps\SACO.SolidWorks.ComptProps\obj\Debug\SACO.SolidWorks.ComptProps.dll
+C:\Users\cabuk\source\repos\SACO.SolidWorks.ComptProps\SACO.SolidWorks.ComptProps\obj\Debug\SACO.SolidWorks.ComptProps.pdb
