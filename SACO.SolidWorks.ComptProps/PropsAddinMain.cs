@@ -1,4 +1,5 @@
 ﻿using SolidWorks.Interop.sldworks;
+using SolidWorks.Interop.swconst;
 using SolidWorks.Interop.swpublished;
 using System;
 using System.Runtime.InteropServices;
@@ -22,7 +23,14 @@ namespace SACO.SolidWorks.ComptProps
 
         private TaskpaneHost mTaskPaneHost;
 
-        public SldWorks mSolidWorksApplication;
+        static ISldWorks mSolidWorksApplication;
+
+
+
+        private ModelDoc2 swModel;
+        private ModelDocExtension modelExt;
+        private CustomPropertyManager customProps;
+
 
         #endregion
 
@@ -30,16 +38,44 @@ namespace SACO.SolidWorks.ComptProps
 
         public bool ConnectToSW(object ThisSW, int Cookie)
         {
-            mSolidWorksApplication = (SldWorks)ThisSW;
+            mSolidWorksApplication = (ISldWorks)ThisSW;
 
             mSwCookie = Cookie;
 
             var ok = mSolidWorksApplication.SetAddinCallbackInfo2(0, this, mSwCookie);
 
-            LoadUI();
+            var val = "";
+            var valOut = "";
+
+            swModel = mSolidWorksApplication.ActiveDoc;
+
+            if (swModel != null) // && getExtType == (int)swDocumentTypes_e.swDocPART)
+            {
+                var getExtType = swModel.GetType();
+                modelExt = swModel.Extension;
+                customProps = modelExt.CustomPropertyManager[""];
+                var tempType = customProps.Get4("Template_Type", false, out val, out valOut);
+
+                if (tempType == true)
+                {
+                    LoadUI();
+                }
+                else
+                {
+                    UnloadUI();
+                }
+            }
+            else
+            {
+                LoadUI();
+            }
+
+
+            
 
             return true;
         }
+
 
         public bool DisconnectFromSW()
         {
@@ -58,7 +94,7 @@ namespace SACO.SolidWorks.ComptProps
 
             mTaskPaneHost = (TaskpaneHost)mTaskpaneView.AddControl(PropsAddinMain.SWTASKPANE_PROGID, string.Empty);
 
-            mTaskPaneHost.getSwApp(mSolidWorksApplication);
+            mTaskPaneHost.getSwApp((SldWorks)mSolidWorksApplication);//added
         }
 
         private void UnloadUI()
@@ -100,4 +136,8 @@ namespace SACO.SolidWorks.ComptProps
 
         #endregion
     }
+
+
+   
+    
 }

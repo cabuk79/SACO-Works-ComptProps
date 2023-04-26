@@ -1,9 +1,13 @@
 ﻿using SACO.SolidWorks.ComptProps.Models;
 using SolidWorks.Interop.sldworks;
+using SolidWorks.Interop.swconst;
+using SolidWorks.Interop.swpublished;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,15 +41,26 @@ namespace SACO.SolidWorks.ComptProps
         private ModelDocExtension modelExt;
         private CustomPropertyManager customProps;
 
+
+        private int mSwCookie;
+
+        //static DSldWorksEvents_FileOpenNotify2EventHandler fileOpenNotify;
+
+        static FileOpenNotifyHandler fileOpenNotify;
+
+
+
         #endregion
+
+
+
+
+
+
 
         #region Control Properties
 
-        private TextBox textBox1;
-        private Button button1;
-        private Button button2;
-        private TextBox textBox2;
-        private DateTimePicker dateTimePicker1;
+        private Button btnRefreshProps;
         private GroupBox grpGeneral;
         private TextBox textTitle;
         private Label label5;
@@ -74,7 +89,7 @@ namespace SACO.SolidWorks.ComptProps
         private DateTimePicker dateUncontrolledDateCheckedTwo;
         private DateTimePicker dateUncontolledCheckedOne;
         private DateTimePicker dateUncontrolledDrawn;
-        private GroupBox groupBox1;
+        private GroupBox groupControlled;
         private DateTimePicker dateControlledDateCheckedThree;
         private DateTimePicker dateControlledDateCheckedTwo;
         private DateTimePicker dateContolledCheckedOne;
@@ -97,6 +112,8 @@ namespace SACO.SolidWorks.ComptProps
         private Label label18;
         private ComboBox dropProductGroup;
         private Label label19;
+        private Label lblSacoComptHeader;
+        private Button btnSave;
         private TextBox textNotesComments;
 
         #endregion
@@ -105,17 +122,20 @@ namespace SACO.SolidWorks.ComptProps
         {
             InitializeComponent();
             GetLists();
+
+            //swModel = swApp.ActiveDoc;
+            fileOpenNotify = new FileOpenNotifyHandler();
+            fileOpenNotify.Init(swApp);
+
         }
 
 
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.btnRefreshProps = new System.Windows.Forms.Button();
             this.grpGeneral = new System.Windows.Forms.GroupBox();
+            this.dropProductGroup = new System.Windows.Forms.ComboBox();
+            this.label19 = new System.Windows.Forms.Label();
             this.textProject = new System.Windows.Forms.TextBox();
             this.dropThickness = new System.Windows.Forms.ComboBox();
             this.dropMaterial = new System.Windows.Forms.ComboBox();
@@ -143,7 +163,7 @@ namespace SACO.SolidWorks.ComptProps
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupControlled = new System.Windows.Forms.GroupBox();
             this.dateSignedBy = new System.Windows.Forms.DateTimePicker();
             this.dropSignedBy = new System.Windows.Forms.ComboBox();
             this.label17 = new System.Windows.Forms.Label();
@@ -165,59 +185,25 @@ namespace SACO.SolidWorks.ComptProps
             this.label16 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.textNotesComments = new System.Windows.Forms.TextBox();
-            this.dropProductGroup = new System.Windows.Forms.ComboBox();
-            this.label19 = new System.Windows.Forms.Label();
+            this.lblSacoComptHeader = new System.Windows.Forms.Label();
+            this.btnSave = new System.Windows.Forms.Button();
             this.grpGeneral.SuspendLayout();
             this.groupUncontrolled.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.groupControlled.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button1
+            // btnRefreshProps
             // 
-            this.button1.BackColor = System.Drawing.Color.DarkRed;
-            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button1.Location = new System.Drawing.Point(420, 61);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(95, 62);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Get Properties";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.BackColor = System.Drawing.Color.DarkRed;
-            this.button2.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button2.Location = new System.Drawing.Point(650, 140);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(95, 62);
-            this.button2.TabIndex = 0;
-            this.button2.Text = "Save Properties";
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(535, 232);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(379, 20);
-            this.textBox1.TabIndex = 1;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(535, 292);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(379, 96);
-            this.textBox2.TabIndex = 2;
-            // 
-            // dateTimePicker1
-            // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(545, 406);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(200, 20);
-            this.dateTimePicker1.TabIndex = 3;
+            this.btnRefreshProps.BackColor = System.Drawing.Color.DarkRed;
+            this.btnRefreshProps.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnRefreshProps.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnRefreshProps.Location = new System.Drawing.Point(230, 3);
+            this.btnRefreshProps.Name = "btnRefreshProps";
+            this.btnRefreshProps.Size = new System.Drawing.Size(95, 44);
+            this.btnRefreshProps.TabIndex = 0;
+            this.btnRefreshProps.Text = "Get Properties";
+            this.btnRefreshProps.UseVisualStyleBackColor = false;
+            this.btnRefreshProps.Click += new System.EventHandler(this.button1_Click);
             // 
             // grpGeneral
             // 
@@ -234,12 +220,29 @@ namespace SACO.SolidWorks.ComptProps
             this.grpGeneral.Controls.Add(this.label3);
             this.grpGeneral.Controls.Add(this.label2);
             this.grpGeneral.Controls.Add(this.Title);
-            this.grpGeneral.Location = new System.Drawing.Point(16, 28);
+            this.grpGeneral.Location = new System.Drawing.Point(21, 53);
             this.grpGeneral.Name = "grpGeneral";
             this.grpGeneral.Size = new System.Drawing.Size(380, 199);
             this.grpGeneral.TabIndex = 4;
             this.grpGeneral.TabStop = false;
             this.grpGeneral.Text = "General";
+            // 
+            // dropProductGroup
+            // 
+            this.dropProductGroup.FormattingEnabled = true;
+            this.dropProductGroup.Location = new System.Drawing.Point(116, 164);
+            this.dropProductGroup.Name = "dropProductGroup";
+            this.dropProductGroup.Size = new System.Drawing.Size(245, 21);
+            this.dropProductGroup.TabIndex = 11;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(24, 167);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(76, 13);
+            this.label19.TabIndex = 10;
+            this.label19.Text = "Product Group";
             // 
             // textProject
             // 
@@ -347,7 +350,7 @@ namespace SACO.SolidWorks.ComptProps
             this.groupUncontrolled.Controls.Add(this.label7);
             this.groupUncontrolled.Controls.Add(this.label6);
             this.groupUncontrolled.Controls.Add(this.label1);
-            this.groupUncontrolled.Location = new System.Drawing.Point(16, 249);
+            this.groupUncontrolled.Location = new System.Drawing.Point(21, 274);
             this.groupUncontrolled.Name = "groupUncontrolled";
             this.groupUncontrolled.Size = new System.Drawing.Size(380, 191);
             this.groupUncontrolled.TabIndex = 5;
@@ -360,6 +363,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateUncontrolledDateCheckedThree.Name = "dateUncontrolledDateCheckedThree";
             this.dateUncontrolledDateCheckedThree.Size = new System.Drawing.Size(126, 20);
             this.dateUncontrolledDateCheckedThree.TabIndex = 16;
+            this.dateUncontrolledDateCheckedThree.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dateUncontrolledDateCheckedTwo
             // 
@@ -367,6 +371,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateUncontrolledDateCheckedTwo.Name = "dateUncontrolledDateCheckedTwo";
             this.dateUncontrolledDateCheckedTwo.Size = new System.Drawing.Size(126, 20);
             this.dateUncontrolledDateCheckedTwo.TabIndex = 15;
+            this.dateUncontrolledDateCheckedTwo.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dateUncontolledCheckedOne
             // 
@@ -374,6 +379,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateUncontolledCheckedOne.Name = "dateUncontolledCheckedOne";
             this.dateUncontolledCheckedOne.Size = new System.Drawing.Size(126, 20);
             this.dateUncontolledCheckedOne.TabIndex = 14;
+            this.dateUncontolledCheckedOne.ValueChanged += DateTimePicker_ValueChanged;          
             // 
             // dateUncontrolledDrawn
             // 
@@ -381,6 +387,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateUncontrolledDrawn.Name = "dateUncontrolledDrawn";
             this.dateUncontrolledDrawn.Size = new System.Drawing.Size(126, 20);
             this.dateUncontrolledDrawn.TabIndex = 13;
+            this.dateUncontrolledDrawn.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dropStatusUncontrolled
             // 
@@ -484,34 +491,34 @@ namespace SACO.SolidWorks.ComptProps
             this.label1.TabIndex = 0;
             this.label1.Text = "Revision";
             // 
-            // groupBox1
+            // groupControlled
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.White;
-            this.groupBox1.Controls.Add(this.dateSignedBy);
-            this.groupBox1.Controls.Add(this.dropSignedBy);
-            this.groupBox1.Controls.Add(this.label17);
-            this.groupBox1.Controls.Add(this.dateControlledDateCheckedThree);
-            this.groupBox1.Controls.Add(this.dateControlledDateCheckedTwo);
-            this.groupBox1.Controls.Add(this.dateContolledCheckedOne);
-            this.groupBox1.Controls.Add(this.dateControlledDrawn);
-            this.groupBox1.Controls.Add(this.dropStatusControlled);
-            this.groupBox1.Controls.Add(this.dropCheckedThreeControlled);
-            this.groupBox1.Controls.Add(this.dropCheckedTwoControlled);
-            this.groupBox1.Controls.Add(this.dropDrawnByControlled);
-            this.groupBox1.Controls.Add(this.dropCheckedOneControlled);
-            this.groupBox1.Controls.Add(this.dropControlledRevision);
-            this.groupBox1.Controls.Add(this.label11);
-            this.groupBox1.Controls.Add(this.label12);
-            this.groupBox1.Controls.Add(this.label13);
-            this.groupBox1.Controls.Add(this.label14);
-            this.groupBox1.Controls.Add(this.label15);
-            this.groupBox1.Controls.Add(this.label16);
-            this.groupBox1.Location = new System.Drawing.Point(16, 456);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(380, 221);
-            this.groupBox1.TabIndex = 17;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Controlled";
+            this.groupControlled.BackColor = System.Drawing.Color.White;
+            this.groupControlled.Controls.Add(this.dateSignedBy);
+            this.groupControlled.Controls.Add(this.dropSignedBy);
+            this.groupControlled.Controls.Add(this.label17);
+            this.groupControlled.Controls.Add(this.dateControlledDateCheckedThree);
+            this.groupControlled.Controls.Add(this.dateControlledDateCheckedTwo);
+            this.groupControlled.Controls.Add(this.dateContolledCheckedOne);
+            this.groupControlled.Controls.Add(this.dateControlledDrawn);
+            this.groupControlled.Controls.Add(this.dropStatusControlled);
+            this.groupControlled.Controls.Add(this.dropCheckedThreeControlled);
+            this.groupControlled.Controls.Add(this.dropCheckedTwoControlled);
+            this.groupControlled.Controls.Add(this.dropDrawnByControlled);
+            this.groupControlled.Controls.Add(this.dropCheckedOneControlled);
+            this.groupControlled.Controls.Add(this.dropControlledRevision);
+            this.groupControlled.Controls.Add(this.label11);
+            this.groupControlled.Controls.Add(this.label12);
+            this.groupControlled.Controls.Add(this.label13);
+            this.groupControlled.Controls.Add(this.label14);
+            this.groupControlled.Controls.Add(this.label15);
+            this.groupControlled.Controls.Add(this.label16);
+            this.groupControlled.Location = new System.Drawing.Point(21, 481);
+            this.groupControlled.Name = "groupControlled";
+            this.groupControlled.Size = new System.Drawing.Size(380, 221);
+            this.groupControlled.TabIndex = 17;
+            this.groupControlled.TabStop = false;
+            this.groupControlled.Text = "Controlled";
             // 
             // dateSignedBy
             // 
@@ -519,6 +526,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateSignedBy.Name = "dateSignedBy";
             this.dateSignedBy.Size = new System.Drawing.Size(126, 20);
             this.dateSignedBy.TabIndex = 19;
+            this.dateSignedBy.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dropSignedBy
             // 
@@ -543,6 +551,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateControlledDateCheckedThree.Name = "dateControlledDateCheckedThree";
             this.dateControlledDateCheckedThree.Size = new System.Drawing.Size(126, 20);
             this.dateControlledDateCheckedThree.TabIndex = 16;
+            this.dateControlledDateCheckedThree.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dateControlledDateCheckedTwo
             // 
@@ -550,6 +559,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateControlledDateCheckedTwo.Name = "dateControlledDateCheckedTwo";
             this.dateControlledDateCheckedTwo.Size = new System.Drawing.Size(126, 20);
             this.dateControlledDateCheckedTwo.TabIndex = 15;
+            this.dateControlledDateCheckedTwo.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dateContolledCheckedOne
             // 
@@ -557,6 +567,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateContolledCheckedOne.Name = "dateContolledCheckedOne";
             this.dateContolledCheckedOne.Size = new System.Drawing.Size(126, 20);
             this.dateContolledCheckedOne.TabIndex = 14;
+            this.dateContolledCheckedOne.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dateControlledDrawn
             // 
@@ -564,6 +575,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateControlledDrawn.Name = "dateControlledDrawn";
             this.dateControlledDrawn.Size = new System.Drawing.Size(126, 20);
             this.dateControlledDrawn.TabIndex = 13;
+            this.dateControlledDrawn.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dropStatusControlled
             // 
@@ -670,7 +682,7 @@ namespace SACO.SolidWorks.ComptProps
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(16, 696);
+            this.label18.Location = new System.Drawing.Point(21, 721);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(89, 13);
             this.label18.TabIndex = 18;
@@ -678,51 +690,54 @@ namespace SACO.SolidWorks.ComptProps
             // 
             // textNotesComments
             // 
+            this.textNotesComments.AcceptsReturn = true;
+            this.textNotesComments.AcceptsTab = true;
             this.textNotesComments.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.textNotesComments.Location = new System.Drawing.Point(19, 712);
+            this.textNotesComments.Location = new System.Drawing.Point(24, 737);
             this.textNotesComments.Multiline = true;
             this.textNotesComments.Name = "textNotesComments";
             this.textNotesComments.Size = new System.Drawing.Size(377, 89);
             this.textNotesComments.TabIndex = 19;
             // 
-            // dropProductGroup
+            // lblSacoComptHeader
             // 
-            this.dropProductGroup.FormattingEnabled = true;
-            this.dropProductGroup.Location = new System.Drawing.Point(116, 164);
-            this.dropProductGroup.Name = "dropProductGroup";
-            this.dropProductGroup.Size = new System.Drawing.Size(245, 21);
-            this.dropProductGroup.TabIndex = 11;
+            this.lblSacoComptHeader.AutoSize = true;
+            this.lblSacoComptHeader.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSacoComptHeader.Location = new System.Drawing.Point(18, 17);
+            this.lblSacoComptHeader.Name = "lblSacoComptHeader";
+            this.lblSacoComptHeader.Size = new System.Drawing.Size(206, 16);
+            this.lblSacoComptHeader.TabIndex = 20;
+            this.lblSacoComptHeader.Text = "SACO Component Properties";
             // 
-            // label19
+            // btnSave
             // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(24, 167);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(76, 13);
-            this.label19.TabIndex = 10;
-            this.label19.Text = "Product Group";
+            this.btnSave.Location = new System.Drawing.Point(326, 3);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(75, 44);
+            this.btnSave.TabIndex = 21;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // TaskpaneHost
             // 
             this.BackColor = System.Drawing.Color.Silver;
+            this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.lblSacoComptHeader);
             this.Controls.Add(this.textNotesComments);
             this.Controls.Add(this.label18);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.groupControlled);
             this.Controls.Add(this.groupUncontrolled);
             this.Controls.Add(this.grpGeneral);
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.btnRefreshProps);
             this.Name = "TaskpaneHost";
-            this.Size = new System.Drawing.Size(644, 831);
+            this.Size = new System.Drawing.Size(1051, 831);
             this.grpGeneral.ResumeLayout(false);
             this.grpGeneral.PerformLayout();
             this.groupUncontrolled.ResumeLayout(false);
             this.groupUncontrolled.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupControlled.ResumeLayout(false);
+            this.groupControlled.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -737,10 +752,16 @@ namespace SACO.SolidWorks.ComptProps
         }
 
 
+        private void DateTimePicker_ValueChanged(object sender, EventArgs e)
+        {
+            DateTimePicker dateTimePicker = sender as DateTimePicker;
+            dateTimePicker.Format = DateTimePickerFormat.Custom;
+            dateTimePicker.CustomFormat = "dd MMMM yyyy";
+        }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            LoadTaskPaneData();
+            //LoadTaskPaneData();
             //PopulateModel();
         }
 
@@ -762,6 +783,25 @@ namespace SACO.SolidWorks.ComptProps
             FinishIngo = File.ReadLines(@"C:\Users\cabuk\Documents\Development\SACO Sw Properties\Finish Info.txt").ToList();
 
             AssignListsToDropDowns();
+
+            //check if open file is a part file and that is is the correct template
+            //if(swApp != null) 
+            //{
+            //    swModel = swApp.ActiveDoc;
+
+            //    modelExt = swModel.Extension;
+            //    customProps = modelExt.CustomPropertyManager["Default"];
+
+            //    var val = "";
+            //    var valOut = "";
+
+            //    customProps.Get4("Template_Type", false, out val, out valOut);
+
+            //    if (val == "SACO Component V1")
+            //    {
+            //        LoadTaskPaneData();
+            //    }
+            //}
         }
 
 
@@ -770,12 +810,12 @@ namespace SACO.SolidWorks.ComptProps
         /// </summary>
         private void AssignListsToDropDowns()
         {
-            foreach(var item in DesignersInitals)
+            foreach (var item in DesignersInitals)
             {
                 dropDrawnByControlled.Items.Add(item);
             }
 
-            foreach(var item in CheckedByInitials)
+            foreach (var item in CheckedByInitials)
             {
                 dropCheckedOneUncontrolled.Items.Add(item);
                 dropCheckedTwoUncontrolled.Items.Add(item);
@@ -786,43 +826,123 @@ namespace SACO.SolidWorks.ComptProps
                 dropCheckedThreeControlled.Items.Add(item);
             }
 
-            foreach(var item in SignedBy)
+            foreach (var item in SignedBy)
             {
                 dropSignedBy.Items.Add(item);
             }
 
-            foreach(var item in MaterialThickness)
+            foreach (var item in MaterialThickness)
             {
                 dropThickness.Items.Add(item);
             }
 
-            foreach(var item in ProductGroup)
+            foreach (var item in ProductGroup)
             {
                 dropProductGroup.Items.Add(item);
             }
 
-            foreach(var item in MaterialThickness)
+            foreach (var item in MaterialThickness)
             {
                 dropThickness.Items.Add(item);
             }
 
-            foreach(var item in Revision)
+            foreach (var item in Revision)
             {
                 dropControlledRevision.Items.Add(item);
                 dropUncontrolledRevision.Items.Add(item);
             }
 
-            foreach(var item in MaterialInfo)
+            foreach (var item in MaterialInfo)
             {
                 dropMaterial.Items.Add(item);
             }
 
-            foreach(var item in FinishIngo)
+            foreach (var item in FinishIngo)
             {
                 dropFinish.Items.Add(item);
             }
         }
 
+        private void SaveProps()
+        {
+            swModel = swApp.ActiveDoc;
+
+            modelExt = swModel.Extension;
+            customProps = modelExt.CustomPropertyManager[""];
+
+            #region General
+
+            customProps.Set2("Title_Info", textTitle.Text);
+            customProps.Set2("Notes_Comments", textNotesComments.Text);
+            customProps.Set2("Project", textProject.Text);
+            customProps.Set2("Material_Info", dropMaterial.SelectedItem.ToString());
+            customProps.Set2("Product_Group", dropProductGroup.SelectedItem.ToString());
+            customProps.Set2("Thickness", dropThickness.SelectedItem.ToString());
+            //customProps.Set2("Finish_Info", dropFinish.SelectedItem.ToString());       
+
+            #endregion
+
+            //#region Uncontrolled
+
+            //customProps.Get4("Drawn_Controlled", false, out val, out valOut);
+            //dropDrawnByControlled.SelectedItem = val;
+
+            //customProps.Get4("Drawn_UnControlled", false, out val, out valOut);
+            //dropUncontrolledDrawnBy.SelectedItem = val;
+
+            //customProps.Get4("UnControlled_Checked_By_One", false, out val, out valOut);
+            //dropCheckedOneUncontrolled.SelectedItem = val;
+
+            //customProps.Get4("UnControlled_Checked_By_Two", false, out val, out valOut);
+            //dropCheckedTwoUncontrolled.SelectedItem = val;
+
+            //customProps.Get4("UnControlled_Checked_By_Three", false, out val, out valOut);
+            //dropCheckedThreeUncontrolled.SelectedItem = val;
+
+            customProps.Set2("Uncontrolled_Date_Checked_One", dateUncontolledCheckedOne.Value.ToString());
+            
+
+            //customProps.Get4("Uncontrolled_Date_Checked_Two", false, out val, out valOut);
+            //dateUncontrolledDateCheckedTwo.Value = ParseDate(val);
+
+            //customProps.Get4("Uncontrolled_Date_Checked_Three", false, out val, out valOut);
+            //dateUncontrolledDateCheckedThree.Value = ParseDate(val);
+
+            //#endregion
+
+            //#region Controlled
+
+            //customProps.Get4("Controlled_Checked_By_One", false, out val, out valOut);
+            //dropCheckedOneControlled.SelectedItem = val;
+
+            //customProps.Get4("Controlled_Checked_By_Two", false, out val, out valOut);
+            //dropCheckedTwoControlled.SelectedItem = val;
+
+            //customProps.Get4("Controlled_Checked_By_Three", false, out val, out valOut);
+            //dropCheckedThreeControlled.SelectedItem = val;
+
+            //customProps.Get4("Controlled_Date_Checked_One", false, out val, out valOut);
+            //dateContolledCheckedOne.Value = ParseDate(val);
+
+            //customProps.Get4("Controlled_Date_Checked_Two", false, out val, out valOut);
+            //dateControlledDateCheckedTwo.Value = ParseDate(val);
+
+            //customProps.Get4("Controlled_Date_Checked_Three", false, out val, out valOut);
+            //dateControlledDateCheckedThree.Value = ParseDate(val);
+
+            //customProps.Get4("Signed_By", false, out val, out valOut);
+            //dropSignedBy.SelectedItem = val;
+
+            //customProps.Get4("Date_Released", false, out val, out valOut);
+            //dateSignedBy.Value = ParseDate(val);
+
+            //#endregion   
+
+        }
+
+        /// <summary>
+        /// This method is called each time a file is opened or swapped in the window to a different file
+        /// </summary>
         private void LoadTaskPaneData()
         {
             var val = "";
@@ -832,7 +952,11 @@ namespace SACO.SolidWorks.ComptProps
             swModel = swApp.ActiveDoc;
 
             modelExt = swModel.Extension;
-            customProps = modelExt.CustomPropertyManager["Default"];
+
+
+            //Ge the extension and make sure it is a part file otherwise do not load
+
+            customProps = modelExt.CustomPropertyManager[""]; //modelExt.CustomPropertyManager["Default"];
 
             #region General
 
@@ -861,6 +985,8 @@ namespace SACO.SolidWorks.ComptProps
 
             #region Uncontrolled
 
+            
+
             customProps.Get4("Drawn_Controlled", false, out val, out valOut);
             dropDrawnByControlled.SelectedItem = val;
 
@@ -877,8 +1003,16 @@ namespace SACO.SolidWorks.ComptProps
             dropCheckedThreeUncontrolled.SelectedItem = val;
 
             customProps.Get4("Uncontrolled_Date_Checked_One", false, out val, out valOut);
-            dateUncontolledCheckedOne.Value = ParseDate(val);
-
+            if(val == "")
+            {
+                dateUncontolledCheckedOne.Format = DateTimePickerFormat.Custom;
+                dateUncontolledCheckedOne.CustomFormat = " ";
+            }
+            else
+            {              
+                dateUncontolledCheckedOne.Value = ParseDate(val);
+            }
+            
             customProps.Get4("Uncontrolled_Date_Checked_Two", false, out val, out valOut);
             dateUncontrolledDateCheckedTwo.Value = ParseDate(val);
 
@@ -948,12 +1082,12 @@ namespace SACO.SolidWorks.ComptProps
         /// <returns>Returns the string entered into a valid DateTime formatted as dd/MM/yyyy</returns>
         private DateTime ParseDate(string value)
         {
-            if(value != "")
+            if (value != "")
             {
                 return DateTime.ParseExact(value, "dd/MM/yyyy",
                                 System.Globalization.CultureInfo.InvariantCulture);
             }
-            
+
             return DateTime.Now;
         }
 
@@ -963,6 +1097,155 @@ namespace SACO.SolidWorks.ComptProps
         public void getSwApp(SldWorks SwApp)
         {
             swApp = SwApp;
-        }     
+
+            swApp.ActiveDocChangeNotify += SwApp_ActiveDocChangeNotify;
+            
+        }
+
+        private int SwApp_ActiveDocChangeNotify()
+        {
+            OnActiveDocChangeNotify();
+            return 1;
+        }
+
+        /// <summary>
+        /// Runs when a file is opened or when switching to another
+        /// </summary>
+        private void OnActiveDocChangeNotify()
+        {
+            ModelDoc2 activeDoc = swApp.ActiveDoc as ModelDoc2;
+            if (activeDoc != null)
+            {
+                // Check if the active document is a part, assembly, or drawing document
+                switch (activeDoc.GetType())
+                {
+                    case (int)swDocumentTypes_e.swDocPART:
+                        // Perform actions for part document
+                        //check it is the correct part
+                        var val = "";
+                        var valOut = "";
+                        modelExt = activeDoc.Extension;
+                        customProps = modelExt.CustomPropertyManager[""];
+
+                        customProps.Get4("Template_Type", false, out val, out valOut);
+                        
+                        if(val == "SACO Component V1")
+                        {
+                            SetPropComponentsToShow();
+                            LoadTaskPaneData();
+                        }
+                        else
+                        {
+                            SetPropComponentsToHide();                           
+                        }
+                        break;
+                    case (int)swDocumentTypes_e.swDocASSEMBLY:
+                        // Perform actions for assembly document
+                        SetPropComponentsToHide();
+                        break;
+                    case (int)swDocumentTypes_e.swDocDRAWING:
+                        // Perform actions for drawing document            
+                        SetPropComponentsToHide();
+                        break;
+                    default:
+                        // Do nothing for other document types
+                        break;
+                }
+            }
+        }
+
+        private void SetPropComponentsToShow()
+        {
+            grpGeneral.Visible = true;
+            groupUncontrolled.Visible = true;
+            groupControlled.Visible = true;
+            textNotesComments.Visible = true;
+            btnSave.Visible = true;
+            btnRefreshProps.Visible = true;
+        }
+
+        private void SetPropComponentsToHide()
+        {
+            grpGeneral.Visible = false;
+            groupUncontrolled.Visible = false;
+            groupControlled.Visible = false;
+            textNotesComments.Visible = false;
+            btnSave.Visible = false;
+            btnRefreshProps.Visible = false;
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            SaveProps();
+        }
+
+        //private void dateUncontolledCheckedOne_ValueChanged(object sender, EventArgs e)
+        //{
+        //    dateUncontolledCheckedOne.Format = DateTimePickerFormat.Custom;
+        //    dateUncontolledCheckedOne.CustomFormat = "dd MMMM yyyy";
+        //}
+    }
+
+
+
+
+
+
+
+    public class FileOpenNotifyHandler : IDisposable
+    {
+        SldWorks swApp;
+        int fileOpenNotifyCookie;
+
+        public void Init(SldWorks swApp)
+        {
+            this.swApp = swApp;
+            fileOpenNotifyCookie = 1; //swApp.SetAddinCallbackInfo((int)swAddinCallback_e.swAddinCallback_FileOpenPostNotify, 
+                                      //      null, 
+                                      //      new FileOpenNotifyDelegate(FileOpenNotify));
+
+            //fileOpenNotifyCookie = swApp.SetAddinCallbackInfo2((int)swAddinCallback_e.swAddinCallback_FileOpenPostNotify, null, new FileOpenNotifyDelegate(FileOpenNotify));
+
+         
+        }
+
+        
+
+        public int FileOpenNotify(object FileName)
+        {
+            string fileNameString = (string)FileName;
+
+            if (System.IO.Path.GetExtension(fileNameString) == ".sldprt")
+            {
+                System.Diagnostics.Debug.Print("Part file opened: " + fileNameString);
+            }
+            else
+            {
+                System.Diagnostics.Debug.Print("Non-part file opened: " + fileNameString);
+            }
+
+            // Return 0 to indicate success
+            return 0;
+        }
+
+        
+
+        public void Dispose()
+        {
+            if (swApp != null && fileOpenNotifyCookie != 0)
+            {
+                swApp.RemoveCallback(fileOpenNotifyCookie);
+                //swApp.RemoveAddinCallbackInfo(fileOpenNotifyCookie);
+                fileOpenNotifyCookie = 0;
+            }
+        }
+
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate int FileOpenNotifyDelegate(string fileName);
+
+        //[ComVisible(false)]
+        //public delegate int FileOpenNotifyDelegate(string FileName);
+
     }
 }
