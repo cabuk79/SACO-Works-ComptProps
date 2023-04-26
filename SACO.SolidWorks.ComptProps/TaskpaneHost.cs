@@ -1003,15 +1003,16 @@ namespace SACO.SolidWorks.ComptProps
             dropCheckedThreeUncontrolled.SelectedItem = val;
 
             customProps.Get4("Uncontrolled_Date_Checked_One", false, out val, out valOut);
-            if(val == "")
-            {
-                dateUncontolledCheckedOne.Format = DateTimePickerFormat.Custom;
-                dateUncontolledCheckedOne.CustomFormat = " ";
-            }
-            else
-            {              
-                dateUncontolledCheckedOne.Value = ParseDate(val);
-            }
+            SetDateFormats(dateUncontolledCheckedOne, val);
+            //if(val == "")
+            //{
+            //    dateUncontolledCheckedOne.Format = DateTimePickerFormat.Custom;
+            //    dateUncontolledCheckedOne.CustomFormat = " ";
+            //}
+            //else
+            //{              
+            //    dateUncontolledCheckedOne.Value = ParseDate(val);
+            //}
             
             customProps.Get4("Uncontrolled_Date_Checked_Two", false, out val, out valOut);
             dateUncontrolledDateCheckedTwo.Value = ParseDate(val);
@@ -1048,6 +1049,19 @@ namespace SACO.SolidWorks.ComptProps
             dateSignedBy.Value = ParseDate(val);
 
             #endregion   
+        }
+
+        private void SetDateFormats(DateTimePicker dtpControl, string val)
+        {
+            if(val == "")
+            {
+                dtpControl.Format = DateTimePickerFormat.Custom;
+                dtpControl.CustomFormat = " ";
+            }
+            else
+            {
+                dtpControl.Value = ParseDate(val);
+            }
         }
 
         private void PopulateModel()
