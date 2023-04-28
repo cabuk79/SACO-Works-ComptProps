@@ -114,6 +114,7 @@ namespace SACO.SolidWorks.ComptProps
         private Label label19;
         private Label lblSacoComptHeader;
         private Button btnSave;
+        private Button btnUncontrolledCheckedDateRemove;
         private TextBox textNotesComments;
 
         #endregion
@@ -121,6 +122,9 @@ namespace SACO.SolidWorks.ComptProps
         public TaskpaneHost()
         {
             InitializeComponent();
+
+            this.dateUncontrolledDrawn.ValueChanged += delegate (object sender, EventArgs e) { DateTimePicker_ValueChanged(sender, e, "Drawn_Date_Uncontrolled"); }; ;
+
             GetLists();
 
             //swModel = swApp.ActiveDoc;
@@ -147,6 +151,7 @@ namespace SACO.SolidWorks.ComptProps
             this.label2 = new System.Windows.Forms.Label();
             this.Title = new System.Windows.Forms.Label();
             this.groupUncontrolled = new System.Windows.Forms.GroupBox();
+            this.btnUncontrolledCheckedDateRemove = new System.Windows.Forms.Button();
             this.dateUncontrolledDateCheckedThree = new System.Windows.Forms.DateTimePicker();
             this.dateUncontrolledDateCheckedTwo = new System.Windows.Forms.DateTimePicker();
             this.dateUncontolledCheckedOne = new System.Windows.Forms.DateTimePicker();
@@ -334,6 +339,7 @@ namespace SACO.SolidWorks.ComptProps
             // groupUncontrolled
             // 
             this.groupUncontrolled.BackColor = System.Drawing.Color.White;
+            this.groupUncontrolled.Controls.Add(this.btnUncontrolledCheckedDateRemove);
             this.groupUncontrolled.Controls.Add(this.dateUncontrolledDateCheckedThree);
             this.groupUncontrolled.Controls.Add(this.dateUncontrolledDateCheckedTwo);
             this.groupUncontrolled.Controls.Add(this.dateUncontolledCheckedOne);
@@ -352,10 +358,20 @@ namespace SACO.SolidWorks.ComptProps
             this.groupUncontrolled.Controls.Add(this.label1);
             this.groupUncontrolled.Location = new System.Drawing.Point(21, 274);
             this.groupUncontrolled.Name = "groupUncontrolled";
-            this.groupUncontrolled.Size = new System.Drawing.Size(380, 191);
+            this.groupUncontrolled.Size = new System.Drawing.Size(402, 191);
             this.groupUncontrolled.TabIndex = 5;
             this.groupUncontrolled.TabStop = false;
             this.groupUncontrolled.Text = "UnControlled";
+            // 
+            // btnUncontrolledCheckedDateRemove
+            // 
+            this.btnUncontrolledCheckedDateRemove.Location = new System.Drawing.Point(373, 56);
+            this.btnUncontrolledCheckedDateRemove.Name = "btnUncontrolledCheckedDateRemove";
+            this.btnUncontrolledCheckedDateRemove.Size = new System.Drawing.Size(18, 18);
+            this.btnUncontrolledCheckedDateRemove.TabIndex = 17;
+            this.btnUncontrolledCheckedDateRemove.Text = "x";
+            this.btnUncontrolledCheckedDateRemove.UseVisualStyleBackColor = true;
+            this.btnUncontrolledCheckedDateRemove.Click += new System.EventHandler(this.btnUncontrolledCheckedDateRemove_Click);
             // 
             // dateUncontrolledDateCheckedThree
             // 
@@ -363,7 +379,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateUncontrolledDateCheckedThree.Name = "dateUncontrolledDateCheckedThree";
             this.dateUncontrolledDateCheckedThree.Size = new System.Drawing.Size(126, 20);
             this.dateUncontrolledDateCheckedThree.TabIndex = 16;
-            this.dateUncontrolledDateCheckedThree.ValueChanged += DateTimePicker_ValueChanged;
+            
             // 
             // dateUncontrolledDateCheckedTwo
             // 
@@ -371,15 +387,15 @@ namespace SACO.SolidWorks.ComptProps
             this.dateUncontrolledDateCheckedTwo.Name = "dateUncontrolledDateCheckedTwo";
             this.dateUncontrolledDateCheckedTwo.Size = new System.Drawing.Size(126, 20);
             this.dateUncontrolledDateCheckedTwo.TabIndex = 15;
-            this.dateUncontrolledDateCheckedTwo.ValueChanged += DateTimePicker_ValueChanged;
+            //this.dateUncontrolledDrawn.ValueChanged += delegate (object sender, EventArgs e) { DateTimePicker_ValueChanged(this, e, ""); }; ;
             // 
             // dateUncontolledCheckedOne
             // 
             this.dateUncontolledCheckedOne.Location = new System.Drawing.Point(241, 77);
             this.dateUncontolledCheckedOne.Name = "dateUncontolledCheckedOne";
             this.dateUncontolledCheckedOne.Size = new System.Drawing.Size(126, 20);
+            //this.dateUncontrolledDrawn.ValueChanged += delegate (object sender, EventArgs e) { DateTimePicker_ValueChanged(this, e, ""); }; ;
             this.dateUncontolledCheckedOne.TabIndex = 14;
-            this.dateUncontolledCheckedOne.ValueChanged += DateTimePicker_ValueChanged;          
             // 
             // dateUncontrolledDrawn
             // 
@@ -387,7 +403,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateUncontrolledDrawn.Name = "dateUncontrolledDrawn";
             this.dateUncontrolledDrawn.Size = new System.Drawing.Size(126, 20);
             this.dateUncontrolledDrawn.TabIndex = 13;
-            this.dateUncontrolledDrawn.ValueChanged += DateTimePicker_ValueChanged;
+            //this.dateUncontrolledDrawn.ValueChanged += delegate (object sender, EventArgs e) { DateTimePicker_ValueChanged(sender, e, "Drawn_Date_Uncontrolled"); }; ;
             // 
             // dropStatusUncontrolled
             // 
@@ -526,7 +542,6 @@ namespace SACO.SolidWorks.ComptProps
             this.dateSignedBy.Name = "dateSignedBy";
             this.dateSignedBy.Size = new System.Drawing.Size(126, 20);
             this.dateSignedBy.TabIndex = 19;
-            this.dateSignedBy.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dropSignedBy
             // 
@@ -551,7 +566,6 @@ namespace SACO.SolidWorks.ComptProps
             this.dateControlledDateCheckedThree.Name = "dateControlledDateCheckedThree";
             this.dateControlledDateCheckedThree.Size = new System.Drawing.Size(126, 20);
             this.dateControlledDateCheckedThree.TabIndex = 16;
-            this.dateControlledDateCheckedThree.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dateControlledDateCheckedTwo
             // 
@@ -559,7 +573,6 @@ namespace SACO.SolidWorks.ComptProps
             this.dateControlledDateCheckedTwo.Name = "dateControlledDateCheckedTwo";
             this.dateControlledDateCheckedTwo.Size = new System.Drawing.Size(126, 20);
             this.dateControlledDateCheckedTwo.TabIndex = 15;
-            this.dateControlledDateCheckedTwo.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dateContolledCheckedOne
             // 
@@ -567,7 +580,6 @@ namespace SACO.SolidWorks.ComptProps
             this.dateContolledCheckedOne.Name = "dateContolledCheckedOne";
             this.dateContolledCheckedOne.Size = new System.Drawing.Size(126, 20);
             this.dateContolledCheckedOne.TabIndex = 14;
-            this.dateContolledCheckedOne.ValueChanged += DateTimePicker_ValueChanged;
             // 
             // dateControlledDrawn
             // 
@@ -575,7 +587,7 @@ namespace SACO.SolidWorks.ComptProps
             this.dateControlledDrawn.Name = "dateControlledDrawn";
             this.dateControlledDrawn.Size = new System.Drawing.Size(126, 20);
             this.dateControlledDrawn.TabIndex = 13;
-            this.dateControlledDrawn.ValueChanged += DateTimePicker_ValueChanged;
+            //this.dateUncontrolledDrawn.ValueChanged += delegate(object sender, EventArgs e) { DateTimePicker_ValueChanged(this, e, ""); };
             // 
             // dropStatusControlled
             // 
@@ -752,11 +764,15 @@ namespace SACO.SolidWorks.ComptProps
         }
 
 
-        private void DateTimePicker_ValueChanged(object sender, EventArgs e)
+        private void DateTimePicker_ValueChanged(object sender, EventArgs e, string propertyName)
         {
             DateTimePicker dateTimePicker = sender as DateTimePicker;
             dateTimePicker.Format = DateTimePickerFormat.Custom;
             dateTimePicker.CustomFormat = "dd MMMM yyyy";
+
+            //Save Property
+            customProps.Set2(propertyName, dateTimePicker.Value.ToString("dd/MM/yyyy"));
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -899,8 +915,9 @@ namespace SACO.SolidWorks.ComptProps
             //customProps.Get4("UnControlled_Checked_By_Three", false, out val, out valOut);
             //dropCheckedThreeUncontrolled.SelectedItem = val;
 
-            customProps.Set2("Uncontrolled_Date_Checked_One", dateUncontolledCheckedOne.Value.ToString());
-            
+            customProps.Set2("Drawn_Date_Uncontrolled", dateUncontrolledDrawn.Value.ToString("dd/MM/yyyy"));
+            customProps.Set2("Uncontrolled_Date_Checked_One", dateUncontolledCheckedOne.Value.ToString("dd/MM/yyyy"));
+            customProps.Set2("Uncontrolled_Date_Checked_Two", dateUncontrolledDateCheckedTwo.Value.ToString("dd/MM/yyyy"));
 
             //customProps.Get4("Uncontrolled_Date_Checked_Two", false, out val, out valOut);
             //dateUncontrolledDateCheckedTwo.Value = ParseDate(val);
@@ -1004,21 +1021,12 @@ namespace SACO.SolidWorks.ComptProps
 
             customProps.Get4("Uncontrolled_Date_Checked_One", false, out val, out valOut);
             SetDateFormats(dateUncontolledCheckedOne, val);
-            //if(val == "")
-            //{
-            //    dateUncontolledCheckedOne.Format = DateTimePickerFormat.Custom;
-            //    dateUncontolledCheckedOne.CustomFormat = " ";
-            //}
-            //else
-            //{              
-            //    dateUncontolledCheckedOne.Value = ParseDate(val);
-            //}
-            
+
             customProps.Get4("Uncontrolled_Date_Checked_Two", false, out val, out valOut);
-            dateUncontrolledDateCheckedTwo.Value = ParseDate(val);
+            SetDateFormats(dateUncontrolledDateCheckedTwo, val);
 
             customProps.Get4("Uncontrolled_Date_Checked_Three", false, out val, out valOut);
-            dateUncontrolledDateCheckedThree.Value = ParseDate(val);
+            SetDateFormats(dateUncontrolledDateCheckedThree, val);
 
             #endregion
 
@@ -1034,23 +1042,28 @@ namespace SACO.SolidWorks.ComptProps
             dropCheckedThreeControlled.SelectedItem = val;
 
             customProps.Get4("Controlled_Date_Checked_One", false, out val, out valOut);
-            dateContolledCheckedOne.Value = ParseDate(val);
+            SetDateFormats(dateContolledCheckedOne, val);
 
             customProps.Get4("Controlled_Date_Checked_Two", false, out val, out valOut);
-            dateControlledDateCheckedTwo.Value = ParseDate(val);
+            SetDateFormats(dateControlledDateCheckedTwo, val);
 
             customProps.Get4("Controlled_Date_Checked_Three", false, out val, out valOut);
-            dateControlledDateCheckedThree.Value = ParseDate(val);
+            SetDateFormats(dateControlledDateCheckedThree, val);  
 
             customProps.Get4("Signed_By", false, out val, out valOut);
             dropSignedBy.SelectedItem = val;
 
             customProps.Get4("Date_Released", false, out val, out valOut);
-            dateSignedBy.Value = ParseDate(val);
+            SetDateFormats(dateSignedBy, val);
 
             #endregion   
         }
 
+        /// <summary>
+        /// Checks if there is a value in the properties for date and if so it parses this otherwise it sets the date time picker to be blank
+        /// </summary>
+        /// <param name="dtpControl">Name of the DateTimePicker control</param>
+        /// <param name="val">The value from the files summary proprties</param>
         private void SetDateFormats(DateTimePicker dtpControl, string val)
         {
             if(val == "")
@@ -1062,6 +1075,21 @@ namespace SACO.SolidWorks.ComptProps
             {
                 dtpControl.Value = ParseDate(val);
             }
+        }
+
+        /// <summary>
+        /// Clear the date from the date control picker
+        /// </summary>
+        /// <param name="dtpControl">The DateTimePicker control to clear the date</param>
+        private void ClearDate(DateTimePicker dtpControl, string propertyName)
+        {
+
+            //Clear the control and then clear the property in the file properties
+            dtpControl.Format = DateTimePickerFormat.Custom;
+            dtpControl.CustomFormat = " ";
+
+            //Clear the property in the file properties
+            customProps.Set2(propertyName, "");
         }
 
         private void PopulateModel()
@@ -1112,9 +1140,42 @@ namespace SACO.SolidWorks.ComptProps
         {
             swApp = SwApp;
 
-            swApp.ActiveDocChangeNotify += SwApp_ActiveDocChangeNotify;
+            AttachEvenHandlers();
+            //swApp.ActiveDocChangeNotify += SwApp_ActiveDocChangeNotify;
+
+            //swApp.FileCloseNotify += new DSldWorksEvents_FileCloseNotifyEventHandler(SwApp_DocumentClosed);
+            
             
         }
+
+        public void AttachEvenHandlers()
+        {
+            swApp.ActiveDocChangeNotify += this.SwApp_ActiveDocChangeNotify;
+            //swApp.CommandCloseNotify += this.SwApp_DocumentClosed; // new DSldWorksEvents_FileCloseNotifyEventHandler(SwApp_DocumentClosed);
+            //swApp.ActiveModelDocChangeNotify += this.SwApp_DocumentClosed;
+            //swApp.DestroyNotify += this.SwApp_DocumentClosed;
+            //swApp.FileCloseNotify += new DSldWorksEvents_FileCloseNotifyEventHandler(SwApp_DocumentClosed);
+            // return true;
+            //swApp.
+            swApp.FileCloseNotify += this.SwApp_DocumentClosed;
+        }
+
+        //public delegate void DSldWorksEvents_FileCloseNotifyEventHandler(string FileName, int reason);
+
+       
+
+        public int SwApp_DocumentClosed(string fielname, int number)
+        {
+            //Console.WriteLine(comm);
+            //check if there is an active doucment open and if not hide the task pane
+            if(swApp.ActiveDoc == null) 
+            {
+                SetPropComponentsToHide();
+            }
+
+            return 0;
+        }   
+
 
         private int SwApp_ActiveDocChangeNotify()
         {
@@ -1130,6 +1191,8 @@ namespace SACO.SolidWorks.ComptProps
             ModelDoc2 activeDoc = swApp.ActiveDoc as ModelDoc2;
             if (activeDoc != null)
             {
+
+               
                 // Check if the active document is a part, assembly, or drawing document
                 switch (activeDoc.GetType())
                 {
@@ -1166,6 +1229,10 @@ namespace SACO.SolidWorks.ComptProps
                         break;
                 }
             }
+            else
+            {
+                SetPropComponentsToHide();
+            }
         }
 
         private void SetPropComponentsToShow()
@@ -1192,6 +1259,19 @@ namespace SACO.SolidWorks.ComptProps
         {
             SaveProps();
         }
+
+        private void btnUncontrolledCheckedDateRemove_Click(object sender, EventArgs e)
+        {
+            ClearDate(dateUncontrolledDrawn, "Drawn_Date_Uncontrolled");
+        }
+
+ 
+
+
+
+
+
+
 
         //private void dateUncontolledCheckedOne_ValueChanged(object sender, EventArgs e)
         //{
