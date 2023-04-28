@@ -67,6 +67,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Functions\UpdateFunctions.cs" />
     <Compile Include="Models\SacoComponentPropertiesModel.cs" />
     <Compile Include="PropsAddinMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
